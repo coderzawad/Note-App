@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import NoteList from './components/NoteList';
 import NoteEditor from './components/NoteEditor';
+import NoteDetail from './components/NoteDetail';
 import { useNotes } from './hooks/useNotes';
-import { PlusIcon } from '@heroicons/react/24/solid';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
-function App() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingNote, setEditingNote] = useState(null);
+function AppContent() {
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editingNote, setEditingNote] = React.useState(null);
   const { notes, addNote, updateNote, deleteNote } = useNotes();
+  const location = useLocation();
 
   const handleEditNote = (note) => {
     setEditingNote(note);
@@ -41,43 +45,56 @@ function App() {
           >
             <span className="title-gradient">Notes</span>
           </motion.h1>
-          {!isEditing && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-primary"
-              onClick={() => setIsEditing(true)}
-            >
-              <span className="flex items-center gap-2">
-                <PlusIcon className="w-5 h-5" />
-                Create Note
-              </span>
-            </motion.button>
-          )}
         </header>
 
         <AnimatePresence mode="wait">
-          {isEditing ? (
-            <NoteEditor
-              key="editor"
-              note={editingNote}
-              onSave={handleSaveNote}
-              onCancel={() => {
-                setIsEditing(false);
-                setEditingNote(null);
-              }}
-            />
-          ) : (
-            <NoteList
-              key="list"
-              notes={notes}
-              onEdit={handleEditNote}
-              onDelete={deleteNote}
-            />
-          )}
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={
+              <>
+                {!isEditing && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="btn-primary fixed bottom-8 right-8 z-10"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <PlusIcon className="w-5 h-5" />
+                      Create Note
+                    </span>
+                  </motion.button>
+                )}
+                {isEditing ? (
+                  <NoteEditor
+                    note={editingNote}
+                    onSave={handleSaveNote}
+                    onCancel={() => {
+                      setIsEditing(false);
+                      setEditingNote(null);
+                    }}
+                  />
+                ) : (
+                  <NoteList
+                    notes={notes}
+                    onEdit={handleEditNote}
+                    onDelete={deleteNote}
+                  />
+                )}
+              </>
+            } />
+            <Route path="/note/:id" element={<NoteDetail notes={notes} />} />
+          </Routes>
         </AnimatePresence>
       </motion.div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 

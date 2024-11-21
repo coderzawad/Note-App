@@ -1,21 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 @layer base {
   body {
     @apply antialiased text-notes-dark font-['Poppins'];
-    background: rgb(96, 61, 46);
+    background: #1E3A8A;
     min-height: 100vh;
     background-image: 
-      radial-gradient(at 40% 20%, rgb(166, 147, 94) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, rgb(142, 88, 41) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, rgb(208, 184, 144) 0px, transparent 50%),
-      radial-gradient(at 80% 50%, rgb(180, 166, 121) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgb(166, 147, 94) 0px, transparent 50%),
-      radial-gradient(at 80% 100%, rgb(96, 61, 46) 0px, transparent 50%);
+      radial-gradient(at 40% 20%, #3B82F6 0px, transparent 50%),
+      radial-gradient(at 80% 0%, #1D4ED8 0px, transparent 50%),
+      radial-gradient(at 0% 50%, #60A5FA 0px, transparent 50%),
+      radial-gradient(at 80% 50%, #93C5FD 0px, transparent 50%),
+      radial-gradient(at 0% 100%, #3B82F6 0px, transparent 50%),
+      radial-gradient(at 80% 100%, #1E3A8A 0px, transparent 50%);
     animation: bgAnimation 15s ease infinite alternate;
   }
 }
@@ -45,45 +44,45 @@
 }
 
 .note-card {
-  @apply backdrop-blur-xl bg-white/90 rounded-2xl p-6 shadow-xl transition-all duration-300 border border-white/20;
+  @apply backdrop-blur-xl bg-white/95 rounded-2xl p-6 shadow-xl transition-all duration-300 border border-white/20;
   animation: float 6s ease-in-out infinite;
   animation-delay: var(--delay);
 }
 
 .note-card:hover {
-  @apply shadow-2xl bg-white/95;
+  @apply shadow-2xl bg-white;
   transform: translateY(-5px) scale(1.02);
 }
 
 .glass-morph {
-  @apply backdrop-blur-xl bg-white/90 rounded-2xl shadow-xl border border-white/20;
+  @apply backdrop-blur-xl bg-white/95 rounded-2xl shadow-xl border border-white/20;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
 .btn-primary {
-  @apply px-6 py-3 rounded-full font-semibold transition-all duration-300;
-  background: linear-gradient(45deg, rgb(166, 147, 94), rgb(142, 88, 41));
-  box-shadow: 0 4px 15px rgba(142, 88, 41, 0.3);
+  @apply px-6 py-3 rounded-full font-semibold transition-all duration-300 text-white;
+  background: linear-gradient(45deg, #3B82F6, #1D4ED8);
+  box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3);
 }
 
 .btn-primary:hover {
   @apply transform -translate-y-1;
-  box-shadow: 0 6px 20px rgba(142, 88, 41, 0.4);
+  box-shadow: 0 6px 20px rgba(29, 78, 216, 0.4);
 }
 
 .input-field {
-  @apply w-full px-4 py-3 bg-transparent border-2 rounded-xl transition-all duration-300;
-  border-image: linear-gradient(45deg, rgb(166, 147, 94), rgb(142, 88, 41)) 1;
+  @apply w-full px-4 py-3 bg-white/50 border-2 rounded-xl transition-all duration-300;
+  border-image: linear-gradient(45deg, #3B82F6, #1D4ED8) 1;
 }
 
 .input-field:focus {
-  @apply outline-none;
-  box-shadow: 0 0 20px rgba(142, 88, 41, 0.2);
+  @apply outline-none bg-white;
+  box-shadow: 0 0 20px rgba(29, 78, 216, 0.2);
 }
 
 .title-gradient {
   @apply font-bold;
-  background: linear-gradient(45deg, rgb(208, 184, 144), rgb(96, 61, 46));
+   background: linear-gradient(45deg, #171c24e6, #1D4ED8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

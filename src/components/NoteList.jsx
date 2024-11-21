@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PencilIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 const container = {
   hidden: { opacity: 0 },
@@ -27,7 +28,7 @@ function NoteList({ notes, onEdit, onDelete }) {
         className="text-center"
       >
         <div className="glass-morph p-12 max-w-lg mx-auto">
-          <p className="text-2xl text-notes-dark/80 font-medium">
+          <p className="text-2xl text-black/90 font-medium">
             No notes yet. Start creating!
           </p>
         </div>
@@ -51,7 +52,7 @@ function NoteList({ notes, onEdit, onDelete }) {
           style={{ '--delay': `${index * 0.1}s` }}
         >
           <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xl font-semibold title-gradient">{note.title}</h3>
+            <h3 className="text-xl font-semibold text-notes-accent">{note.title}</h3>
             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -71,9 +72,38 @@ function NoteList({ notes, onEdit, onDelete }) {
               </motion.button>
             </div>
           </div>
-          <p className="text-notes-dark/80 mb-4 line-clamp-3">{note.content}</p>
-          <div className="text-sm text-notes-dark/60 font-medium">
-            {format(new Date(note.date), 'MMM d, yyyy')}
+          <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{note.content}</p>
+          
+          {note.images && note.images.length > 0 && (
+            <div className="mb-4 grid grid-cols-2 gap-2">
+              {note.images.slice(0, 2).map((image, index) => (
+                <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+                  <img
+                    src={image}
+                    alt={`Note image ${index + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+              {note.images.length > 2 && (
+                <div className="absolute bottom-2 right-2 bg-black/50 text-white text-sm px-2 py-1 rounded-full">
+                  +{note.images.length - 2}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-notes-primary/80 font-medium">
+              {format(new Date(note.date), 'MMM d, yyyy')}
+            </div>
+            <Link
+              to={`/note/${note.id}`}
+              className="flex items-center gap-1 text-notes-primary hover:text-notes-accent transition-colors"
+            >
+              View Note
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
           </div>
         </motion.div>
       ))}
