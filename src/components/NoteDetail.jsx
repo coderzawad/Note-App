@@ -1,4 +1,4 @@
-import React from 'react';
+  import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -7,7 +7,20 @@ import { ArrowLeftIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outlin
 function NoteDetail({ notes, onEdit, onDelete }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const note = notes.find(n => n.id.toString() === id);
+  const [noteImages, setNoteImages] = useState([]);
+
+  // Find the note based on the ID
+  const note = notes.find((n) => n.id.toString() === id);
+
+  // Fetch images from localStorage
+  useEffect(() => {
+    if (note) {
+      const savedImages = localStorage.getItem(`note-images-${note.id}`);
+      if (savedImages) {
+        setNoteImages(JSON.parse(savedImages));
+      }
+    }
+  }, [note]);
 
   if (!note) {
     return (
@@ -66,16 +79,16 @@ function NoteDetail({ notes, onEdit, onDelete }) {
           {format(new Date(note.date), 'MMMM d, yyyy')}
         </p>
 
-        {note.images && note.images.length > 0 && (
+        {noteImages.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {note.images.map((image, index) => (
+            {noteImages.map((image, index) => (
               <motion.img
                 key={index}
-                src={image}
+                src={image.base64} // Use `base64` if stored in that format
                 alt={`Note image ${index + 1}`}
                 className="w-full h-64 object-cover rounded-lg"
                 whileHover={{ scale: 1.02 }}
-                transition={{ type: "tween" }}
+                transition={{ type: 'tween' }}
               />
             ))}
           </div>
@@ -90,3 +103,4 @@ function NoteDetail({ notes, onEdit, onDelete }) {
 }
 
 export default NoteDetail;
+
