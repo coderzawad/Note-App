@@ -16,7 +16,8 @@
     "@heroicons/react": "^2.0.18",
     "date-fns": "^2.30.0",
     "react-router-dom": "^6.18.0",
-    "react-dropzone": "^14.2.3"
+    "react-dropzone": "^14.2.3",
+    "@loadable/component": "^5.15.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

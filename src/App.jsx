@@ -1,25 +1,32 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-import NoteList from './components/NoteList';
-import NoteEditor from './components/NoteEditor';
-import NoteDetail from './components/NoteDetail';
+import React, { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useNotes } from './hooks/useNotes';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import Header from './components/layout/Header';
+
+// Lazy load components
+const NoteList = lazy(() => import('./components/NoteList'));
+const NoteEditor = lazy(() => import('./components/NoteEditor'));
+const NoteDetail = lazy(() => import('./components/NoteDetail'));
+const CreateNoteButton = lazy(() => import('./components/buttons/CreateNoteButton'));
+
+// Loading fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-[50vh]">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-notes-primary"></div>
+  </div>
+);
 
 function AppContent() {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editingNote, setEditingNote] = React.useState(null);
   const { notes, addNote, updateNote, deleteNote } = useNotes();
-  const location = useLocation();
 
-  const handleEditNote = (note) => {
+  const handleEditNote = React.useCallback((note) => {
     setEditingNote(note);
     setIsEditing(true);
-  };
+  }, []);
 
-  const handleSaveNote = (note) => {
+  const handleSaveNote = React.useCallback((note) => {
     if (editingNote) {
       updateNote(note);
     } else {
@@ -27,51 +34,30 @@ function AppContent() {
     }
     setIsEditing(false);
     setEditingNote(null);
-  };
+  }, [editingNote, updateNote, addNote]);
+
+  const handleCancel = React.useCallback(() => {
+    setIsEditing(false);
+    setEditingNote(null);
+  }, []);
 
   return (
     <div className="min-h-screen">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="container mx-auto px-4 py-8 max-w-7xl"
-      >
-        <header className="text-center mb-12 relative">
-          <motion.h1 
-            className="text-6xl font-bold text-white mb-6 tracking-tight"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200 }}
-          >
-            <span className="title-gradient">Notes</span>
-          </motion.h1>
-        </header>
-
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <Header />
+        
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
             <Route path="/" element={
               <>
                 {!isEditing && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn-primary fixed bottom-8 right-8 z-10"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    <span className="flex items-center gap-2">
-                      <PlusIcon className="w-5 h-5" />
-                      Create Note
-                    </span>
-                  </motion.button>
+                  <CreateNoteButton onClick={() => setIsEditing(true)} />
                 )}
                 {isEditing ? (
                   <NoteEditor
                     note={editingNote}
                     onSave={handleSaveNote}
-                    onCancel={() => {
-                      setIsEditing(false);
-                      setEditingNote(null);
-                    }}
+                    onCancel={handleCancel}
                   />
                 ) : (
                   <NoteList
@@ -90,8 +76,8 @@ function AppContent() {
               />
             } />
           </Routes>
-        </AnimatePresence>
-      </motion.div>
+        </Suspense>
+      </div>
     </div>
   );
 }

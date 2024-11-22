@@ -11,17 +11,17 @@ export function useNotes() {
   }, [notes]);
 
   const addNote = (note) => {
-    setNotes([...notes, note]);
+    setNotes(prev => [...prev, { ...note, id: Date.now(), images: note.images || [] }]);
   };
 
   const updateNote = (updatedNote) => {
-    setNotes(notes.map(note => 
-      note.id === updatedNote.id ? updatedNote : note
+    setNotes(prev => prev.map(note => 
+      note.id === updatedNote.id ? { ...updatedNote, images: updatedNote.images || [] } : note
     ));
   };
 
   const deleteNote = (id) => {
-    setNotes(notes.filter(note => note.id !== id));
+    setNotes(prev => prev.filter(note => note.id !== id));
   };
 
   return { notes, addNote, updateNote, deleteNote };
