@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { TrashIcon, PencilIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 
 const container = {
-  hidden: { opacity: 0 ,    transition: {
-      staggerChildren: 0.1
-    }},
+  hidden: { opacity: 0 },
   show: {
     opacity: 1,
     transition: {
@@ -17,27 +15,12 @@ const container = {
 };
 
 const item = {
-  hidden: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0 }
 };
 
 function NoteList({ notes, onEdit, onDelete }) {
-  const [notesWithImages, setNotesWithImages] = useState([]);
-
-  useEffect(() => {
-    // Fetch images for each note from localStorage
-    const notesWithFetchedImages = notes.map((note) => {
-      const savedImages = localStorage.getItem(`note-images-${note.id}`);
-      return {
-        ...note,
-        images: savedImages ? JSON.parse(savedImages) : [],
-      };
-    });
-
-    setNotesWithImages(notesWithFetchedImages);
-  }, [notes]);
-
-  if (notesWithImages.length === 0) {
+  if (notes.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -60,7 +43,7 @@ function NoteList({ notes, onEdit, onDelete }) {
       animate="show"
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
     >
-      {notesWithImages.map((note, index) => (
+      {notes.map((note, index) => (
         <motion.div
           key={note.id}
           variants={item}
@@ -89,15 +72,14 @@ function NoteList({ notes, onEdit, onDelete }) {
               </motion.button>
             </div>
           </div>
-          <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{note.content}</p>
-
+          
           {note.images && note.images.length > 0 && (
-            <div className="mb-4 grid grid-cols-2 gap-2 relative">
-              {note.images.slice(0, 2).map((image, idx) => (
-                <div key={idx} className="relative aspect-video rounded-lg overflow-hidden">
+            <div className="mb-4 grid grid-cols-2 gap-2">
+              {note.images.slice(0, 2).map((image, index) => (
+                <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
                   <img
-                    src={image.base64} // Assuming images are stored as base64
-                    alt={`Note image ${idx + 1}`}
+                    src={image}
+                    alt={`Note image ${index + 1}`}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
@@ -109,7 +91,9 @@ function NoteList({ notes, onEdit, onDelete }) {
               )}
             </div>
           )}
-
+          
+          <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">{note.content}</p>
+          
           <div className="flex justify-between items-center">
             <div className="text-sm text-notes-primary/80 font-medium">
               {format(new Date(note.date), 'MMM d, yyyy')}

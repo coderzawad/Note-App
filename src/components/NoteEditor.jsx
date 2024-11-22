@@ -4,58 +4,57 @@ import { XMarkIcon, CheckIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { useDropzone } from 'react-dropzone';
 
 function NoteEditor({ note, onSave, onCancel }) {
-  const [noteId, setNoteId] = useState(note?.id || 'new-note');
   const [title, setTitle] = useState(note?.title || '');
   const [content, setContent] = useState(note?.content || '');
-  const [images, setImages] = useState(() => {
-    const savedImages = localStorage.getItem(`note-images-${note?.id || 'new-note'}`);
-    return savedImages ? JSON.parse(savedImages) : [];
-  });
+  const [images, setImages] = useState(note?.images || []);
 
-  const persistImages = (images) => {
-    localStorage.setItem(`note-images-${noteId}`, JSON.stringify(images));
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
-  const handleSave = () => {
-    const newId = note?.id || Date.now(); // Generate unique ID if it's a new note
-    const savedNote = {
-      id: newId,
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: {
+      'image/*': []
+    },
+    onDrop: async (acceptedFiles) => {
+      try {
+        const base64Images = await Promise.all(
+          acceptedFiles.map(file => convertToBase64(file))
+        );
+        setImages([...images, ...base64Images]);
+      } catch (error) {
+        console.error('Error converting images:', error);
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (note) {
+      setTitle(note.title);
+      setContent(note.content);
+      setImages(note.images || []);
+    }
+  }, [note]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      id: note?.id || Date.now(),
       title,
       content,
       images,
       date: note?.date || new Date().toISOString(),
-    };
-
-    // If the note ID has changed, migrate the images in localStorage
-    if (noteId !== newId) {
-      const oldKey = `note-images-${noteId}`;
-      const newKey = `note-images-${newId}`;
-      localStorage.setItem(newKey, localStorage.getItem(oldKey)); // Copy data to new key
-      localStorage.removeItem(oldKey); // Remove old key
-      setNoteId(newId); // Update state with the new ID
-    }
-
-    onSave(savedNote);
+    });
   };
 
-  const handleImageRemove = (index) => {
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
-    persistImages(updatedImages);
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
   };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: 'image/*',
-    onDrop: (acceptedFiles) => {
-      const newImages = acceptedFiles.map((file) => ({
-        name: file.name,
-        base64: URL.createObjectURL(file),
-      }));
-      const allImages = [...images, ...newImages];
-      setImages(allImages);
-      persistImages(allImages);
-    },
-  });
 
   return (
     <motion.div
@@ -64,13 +63,7 @@ function NoteEditor({ note, onSave, onCancel }) {
       exit={{ opacity: 0, y: -20 }}
       className="max-w-3xl mx-auto"
     >
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSave();
-        }}
-        className="glass-morph p-8"
-      >
+      <form onSubmit={handleSubmit} className="glass-morph p-8">
         <div className="mb-6">
           <input
             type="text"
@@ -109,13 +102,13 @@ function NoteEditor({ note, onSave, onCancel }) {
               {images.map((image, index) => (
                 <div key={index} className="relative aspect-video rounded-lg overflow-hidden group">
                   <img
-                    src={image.base64}
-                    alt={`Upload preview ${image.name}`}
+                    src={image}
+                    alt={`Upload preview ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                   <button
                     type="button"
-                    onClick={() => handleImageRemove(index)}
+                    onClick={() => removeImage(index)}
                     className="absolute top-2 right-2 p-1 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <XMarkIcon className="w-4 h-4" />
@@ -157,4 +150,3 @@ function NoteEditor({ note, onSave, onCancel }) {
 }
 
 export default NoteEditor;
-

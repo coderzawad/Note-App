@@ -82,7 +82,13 @@ function AppContent() {
                 )}
               </>
             } />
-            <Route path="/note/:id" element={<NoteDetail notes={notes} />} />
+            <Route path="/note/:id" element={
+              <NoteDetail 
+                notes={notes} 
+                onEdit={handleEditNote}
+                onDelete={deleteNote}
+              />
+            } />
           </Routes>
         </AnimatePresence>
       </motion.div>
