@@ -82,7 +82,7 @@
 
 .title-gradient {
   @apply font-bold;
-  background: linear-gradient(45deg, #3B82F6, #1D4ED8);
+  background: linear-gradient(203deg, #082049, #0d46e7);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

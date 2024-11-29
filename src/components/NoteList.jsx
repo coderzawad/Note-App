@@ -28,7 +28,7 @@ function NoteList({ notes, onEdit, onDelete }) {
         className="text-center"
       >
         <div className="glass-morph p-12 max-w-lg mx-auto">
-          <p className="text-2xl text-white/90 font-medium">
+          <p className="text-2xl text-black/90 font-medium">
             No notes yet. Start creating!
           </p>
         </div>
